@@ -1,0 +1,46 @@
+# This should make a connection to a Cassandra instance your local machine
+
+# (127.0.0.1)
+
+from cassandra.cluster import Cluster
+cluster = Cluster(['127.0.0.1'])
+
+# To establish connection and begin executing queries, need a session
+session = cluster.connect()
+
+# TO-DO: Create a Keyspace 
+try:
+    session.execute("""CREATE KEYSPACE IF NOT EXISTS udacity WITH REPLICATION = {'class':'SimpleStrategy', 'replication_factor':1}""")
+except Exception as e:
+    print(e)
+
+# TO-DO: Set KEYSPACE to the keyspace specified above
+try:
+    session.set_keyspace('udacity')
+except Exception as e:
+    print(e)
+
+# We have provided part of the code to set up the CSV file. Please complete the Apache Cassandra code below#
+query = "CREATE TABLE IF NOT EXISTS music_library (artist text, firstname_user text, gender_user text, iteminsession int, lastname_user text, length float, level text, location_user text, sessionid int, song_title text, userid int, PRIMARY KEY (sessionid, iteminsession))"
+try:
+    session.execute(query)
+except Exception as e:
+    print(e)
+
+file = 'event_datafile_new.csv'
+
+with open(file, encoding = 'utf8') as f:
+    csvreader = csv.reader(f)
+    next(csvreader) # skip header
+    for line in csvreader:
+## TO-DO: Assign the INSERT statements into the `query` variable
+        query = "INSERT INTO music_library (artist, firstname_user, gender_user, iteminsession, lastname_user, length, level, location_user, sessionid, song_title, userid)"
+        query = query + "VALUES(s%,s%,s%;s%;s%;s%;s%;s%;s%;s%,s%)"
+
+        ## TO-DO: Assign which column element should be assigned for each column in the INSERT statement.
+        ## For e.g., to INSERT artist_name and user first_name, you would change the code below to `line[0], line[1]`
+
+try:
+    session.execute(query, (line[0], line[9], float(line[5]), int(line[8]), int(line[3]), int(line[10]), line[1], line[4]))
+except Exception as e:
+    print(e)
